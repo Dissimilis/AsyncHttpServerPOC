@@ -12,7 +12,8 @@ namespace SimpleHttpServerCore
     using ReponseHandler = Func<Response, string, IDictionary<string, string>, Task>;
     public class Listener
     {
-        public int OutstandingConnections = 0;
+        public int OutstandingConnections => _outstandingConnections;
+        private int _outstandingConnections = 0;
         private const int SocketBacklog = 128;
         private readonly Socket _socket;
         private readonly Task _listenTask;
@@ -41,14 +42,14 @@ namespace SimpleHttpServerCore
                     Logger = this.Logger
                 };
 
-                Interlocked.Increment(ref OutstandingConnections);
+                Interlocked.Increment(ref _outstandingConnections);
 
                 //todo: we can add throttling here;
                 //Now we are processing all incoming requests immediately
                 handler.HandleRequestAsync().ContinueWith((t) =>
-                    {
-                        Interlocked.Decrement(ref OutstandingConnections);
-                    });
+                {
+                    Interlocked.Decrement(ref _outstandingConnections);
+                });
             }
         }
 

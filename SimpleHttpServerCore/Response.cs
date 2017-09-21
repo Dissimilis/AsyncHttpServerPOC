@@ -9,7 +9,7 @@ namespace SimpleHttpServerCore
     public class Response : IDisposable
     {
         private readonly NetworkStream _networkStream;
-        private readonly IDictionary<string, string> _headers = new Dictionary<string, string>();
+        private readonly Dictionary<string, string> _headers = new Dictionary<string, string>();
         private bool _disposed = false;
 
         public Response (NetworkStream networkStream)
@@ -63,8 +63,11 @@ namespace SimpleHttpServerCore
 
         public void Dispose()
         {
-            _networkStream.Dispose();
-            _disposed = true;
+            if (!_disposed)
+            {
+                _networkStream.Dispose();
+                _disposed = true;
+            }
         }
     }
 }
